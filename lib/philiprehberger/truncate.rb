@@ -47,9 +47,10 @@ module Philiprehberger
       return omission[0, count] if limit <= 0
 
       truncated = text[0, limit]
+      # Find last word boundary, but if there isn't one just use the limit
       boundary = truncated.rindex(/\s/)
-      truncated = truncated[0, boundary] if boundary && boundary.positive?
-      truncated + omission
+      truncated = truncated[0, boundary] if boundary
+      truncated.rstrip + omission
     end
 
     # Truncate HTML to a given number of visible characters, closing unclosed tags
