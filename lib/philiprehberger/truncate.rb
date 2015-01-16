@@ -47,9 +47,11 @@ module Philiprehberger
       return omission[0, count] if limit <= 0
 
       truncated = text[0, limit]
-      # Find last word boundary, but if there isn't one just use the limit
-      boundary = truncated.rindex(/\s/)
-      truncated = truncated[0, boundary] if boundary
+      # Only break at word boundary if we cut mid-word
+      if limit < text.length && text[limit] =~ /\S/ && truncated.include?(' ')
+        boundary = truncated.rindex(/\s/)
+        truncated = truncated[0, boundary] if boundary
+      end
       truncated.rstrip + omission
     end
 
