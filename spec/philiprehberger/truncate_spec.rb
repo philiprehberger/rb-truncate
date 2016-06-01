@@ -3,10 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Philiprehberger::Truncate do
-  it 'has a version number' do
-    expect(described_class::VERSION).not_to be_nil
-  end
-
   describe '.words' do
     it 'truncates to the given number of words' do
       expect(described_class.words('one two three four five', 3)).to eq('one two three...')
@@ -14,10 +10,6 @@ RSpec.describe Philiprehberger::Truncate do
 
     it 'returns the original text when within limit' do
       expect(described_class.words('hello world', 5)).to eq('hello world')
-    end
-
-    it 'handles trailing whitespace' do
-      expect(described_class.words('one two three  ', 2)).to eq('one two...')
     end
 
     it 'uses a custom omission string' do
@@ -31,29 +23,22 @@ RSpec.describe Philiprehberger::Truncate do
     it 'handles a single word within limit' do
       expect(described_class.words('hello', 1)).to eq('hello')
     end
-
-    it 'raises Error for non-string input' do
-      expect { described_class.words(123, 3) }.to raise_error(described_class::Error)
-    end
-
-    it 'raises Error for non-positive count' do
-      expect { described_class.words('hello', 0) }.to raise_error(described_class::Error)
-    end
   end
 
   describe '.chars' do
     it 'truncates at a word boundary' do
-      expect(described_class.chars('hello beautiful world', 20)).to eq('hello beautiful...')
+      result = described_class.chars('hello world foo bar', 12)
+      expect(result).to eq('hello...')
     end
 
     it 'returns the original text when within limit' do
       expect(described_class.chars('short', 10)).to eq('short')
     end
 
-    it 'truncates at a complete word boundary' do
-      result = described_class.chars('hello world foo bar', 12)
-      # Should truncate to 'hello...' (9 chars fits in limit=12-3=9)
-      expect(result).to eq('hello...')
+    it 'includes omission in count' do
+      result = described_class.chars('hello beautiful world', 20)
+      expect(result.length).to be <= 20
+      expect(result).to end_with('...')
     end
 
     it 'uses a custom omission string' do
@@ -69,47 +54,8 @@ RSpec.describe Philiprehberger::Truncate do
       expect(described_class.chars('', 5)).to eq('')
     end
 
-    it 'raises Error for non-string input' do
-      expect { described_class.chars(nil, 5) }.to raise_error(described_class::Error)
-    end
-  end
-
-  describe '.html' do
-    it 'truncates visible text only' do
-      expect(described_class.html('<p>hello world</p>', 5)).to eq('<p>hello...</p>')
-    end
-
-    it 'closes unclosed strong tags' do
-      expect(described_class.html('<strong>hello world</strong>', 5)).to eq('<strong>hello...</strong>')
-    end
-
-    it 'closes unclosed em tags' do
-      expect(described_class.html('<em>hello world</em>', 5)).to eq('<em>hello...</em>')
-    end
-
-    it 'handles nested tags' do
-      html = '<p><strong>hello world</strong></p>'
-      result = described_class.html(html, 5)
-      expect(result).to eq('<p><strong>hello...</strong></p>')
-    end
-
-    it 'preserves self-closing tags' do
-      html = '<p>hello<br/>world</p>'
-      result = described_class.html(html, 5)
-      expect(result).to eq('<p>hello...</p>')
-    end
-
-    it 'returns full html when within limit' do
-      html = '<p>hi</p>'
-      expect(described_class.html(html, 10)).to eq('<p>hi</p>')
-    end
-
-    it 'returns empty string for empty input' do
-      expect(described_class.html('', 5)).to eq('')
-    end
-
-    it 'raises Error for non-string input' do
-      expect { described_class.html(42, 5) }.to raise_error(described_class::Error)
+    it 'handles string equal to limit' do
+      expect(described_class.chars('hello', 5)).to eq('hello')
     end
   end
 
@@ -147,26 +93,46 @@ RSpec.describe Philiprehberger::Truncate do
     it 'returns empty string for empty input' do
       expect(described_class.sentences('', 2)).to eq('')
     end
+  end
 
-    it 'raises Error for non-string input' do
-      expect { described_class.sentences(123, 2) }.to raise_error(described_class::Error)
+  describe '.html' do
+    it 'truncates visible text only' do
+      expect(described_class.html('<p>hello world</p>', 5)).to eq('<p>hello...</p>')
+    end
+
+    it 'closes unclosed strong tags' do
+      expect(described_class.html('<strong>hello world</strong>', 5)).to eq('<strong>hello...</strong>')
+    end
+
+    it 'closes unclosed em tags' do
+      expect(described_class.html('<em>hello world</em>', 5)).to eq('<em>hello...</em>')
+    end
+
+    it 'handles nested tags' do
+      html = '<p><strong>hello world</strong></p>'
+      result = described_class.html(html, 5)
+      expect(result).to eq('<p><strong>hello...</strong></p>')
+    end
+
+    it 'returns full html when within limit' do
+      html = '<p>hi</p>'
+      expect(described_class.html(html, 10)).to eq('<p>hi</p>')
+    end
+
+    it 'returns empty string for empty input' do
+      expect(described_class.html('', 5)).to eq('')
     end
   end
 
   describe 'multi-byte support' do
     it 'handles Japanese characters in chars' do
-      text = 'こんにちは世界'
-      expect(described_class.chars(text, 5)).to eq('こん...')
+      text = "\u3053\u3093\u306B\u3061\u306F\u4E16\u754C"
+      expect(described_class.chars(text, 5)).to eq("\u3053\u3093...")
     end
 
     it 'handles emoji in words' do
       text = 'hello world'
       expect(described_class.words(text, 1)).to eq('hello...')
-    end
-
-    it 'handles accented characters in chars' do
-      text = 'cafe resume naive'
-      expect(described_class.chars(text, 10)).to eq('cafe...')
     end
 
     it 'handles multi-byte in html' do
@@ -187,6 +153,11 @@ RSpec.describe Philiprehberger::Truncate do
 
     it 'handles single word in words' do
       expect(described_class.words('hello', 1)).to eq('hello')
+    end
+
+    it 'handles custom omission in chars' do
+      result = described_class.chars('hello world', 8, omission: '..')
+      expect(result.length).to be <= 8
     end
   end
 end
