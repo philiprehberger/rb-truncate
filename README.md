@@ -1,8 +1,8 @@
 # philiprehberger-truncate
 
-[![Gem Version](https://badge.fury.io/rb/philiprehberger-truncate.svg)](https://badge.fury.io/rb/philiprehberger-truncate)
-$badge_line
-[![CI](https://github.com/philiprehberger/rb-truncate/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-truncate/actions/workflows/ci.yml)
+[![Tests](https://github.com/philiprehberger/rb-truncate/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-truncate/actions/workflows/ci.yml)
+[![Gem Version](https://badge.fury.io/rb/philiprehberger-truncate.svg)](https://rubygems.org/gems/philiprehberger-truncate)
+[![License](https://img.shields.io/github/license/philiprehberger/rb-truncate)](LICENSE)
 
 Smart string truncation with word boundaries, HTML safety, and multi-byte support. Truncate by words, characters, or sentences with configurable omission strings.
 
