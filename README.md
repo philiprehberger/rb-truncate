@@ -29,25 +29,39 @@ gem install philiprehberger-truncate
 ```ruby
 require "philiprehberger/truncate"
 
-# Truncate by words
 Philiprehberger::Truncate.words('one two three four five', 3)
 # => "one two three..."
+```
 
-# Truncate by characters at word boundary
+### Character Truncation
+
+Truncate to a character limit, breaking at the nearest word boundary:
+
+```ruby
 Philiprehberger::Truncate.chars('hello beautiful world', 20)
 # => "hello beautiful..."
 
-# Truncate by sentences
+# Custom omission string
+Philiprehberger::Truncate.chars('hello beautiful world', 20, omission: ' [more]')
+# => "hello beautiful [more]"
+```
+
+### Sentence Truncation
+
+Keep the first N complete sentences:
+
+```ruby
 Philiprehberger::Truncate.sentences('First sentence. Second sentence. Third.', 2)
 # => "First sentence. Second sentence...."
+```
 
-# HTML-safe truncation (closes unclosed tags)
+### HTML-Safe Truncation
+
+Truncate by visible characters while preserving and closing HTML tags:
+
+```ruby
 Philiprehberger::Truncate.html('<p><strong>hello world</strong></p>', 5)
 # => "<p><strong>hello...</strong></p>"
-
-# Custom omission
-Philiprehberger::Truncate.words('one two three', 2, omission: ' [more]')
-# => "one two [more]"
 ```
 
 ## API
