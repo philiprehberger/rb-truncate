@@ -3,6 +3,7 @@
 [![Tests](https://github.com/philiprehberger/rb-truncate/actions/workflows/ci.yml/badge.svg)](https://github.com/philiprehberger/rb-truncate/actions/workflows/ci.yml)
 [![Gem Version](https://badge.fury.io/rb/philiprehberger-truncate.svg)](https://rubygems.org/gems/philiprehberger-truncate)
 [![License](https://img.shields.io/github/license/philiprehberger/rb-truncate)](LICENSE)
+[![Sponsor](https://img.shields.io/badge/sponsor-GitHub%20Sponsors-ec6cb9)](https://github.com/sponsors/philiprehberger)
 
 Smart string truncation with word boundaries, HTML safety, and multi-byte support
 
@@ -83,4 +84,4 @@ bundle exec rubocop
 
 ## License
 
-MIT
+[MIT](LICENSE)
