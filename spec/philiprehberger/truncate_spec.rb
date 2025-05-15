@@ -160,4 +160,68 @@ RSpec.describe Philiprehberger::Truncate do
       expect(result.length).to be <= 8
     end
   end
+
+  describe '.lines' do
+    it 'truncates to given number of lines' do
+      text = "line one\nline two\nline three\nline four"
+      expect(described_class.lines(text, 2)).to eq("line one\nline two...")
+    end
+
+    it 'returns original text within limit' do
+      text = "line one\nline two"
+      expect(described_class.lines(text, 5)).to eq("line one\nline two")
+    end
+
+    it 'returns empty string for empty input' do
+      expect(described_class.lines('', 3)).to eq('')
+    end
+
+    it 'uses custom omission' do
+      text = "line one\nline two\nline three"
+      expect(described_class.lines(text, 1, omission: ' [more]')).to eq('line one [more]')
+    end
+
+    it 'handles single line within limit' do
+      expect(described_class.lines('hello', 2)).to eq('hello')
+    end
+  end
+
+  describe 'position parameter' do
+    describe 'words with position: :start' do
+      it 'keeps last N words with omission at start' do
+        expect(described_class.words('one two three four five', 3, position: :start)).to eq('...three four five')
+      end
+    end
+
+    describe 'words with position: :middle' do
+      it 'keeps first and last words with omission in middle' do
+        result = described_class.words('one two three four five six', 4, position: :middle)
+        expect(result).to eq('one two...five six')
+      end
+    end
+
+    describe 'chars with position: :start' do
+      it 'keeps tail characters with omission at start' do
+        result = described_class.chars('hello beautiful world', 12, position: :start)
+        expect(result).to start_with('...')
+        expect(result.length).to be <= 12
+      end
+    end
+
+    describe 'chars with position: :middle' do
+      it 'keeps head and tail with omission in middle' do
+        result = described_class.chars('hello beautiful world', 15, position: :middle)
+        expect(result).to include('...')
+        expect(result.length).to be <= 15
+      end
+    end
+
+    describe 'sentences with position: :start' do
+      it 'keeps last N sentences' do
+        text = 'First. Second. Third. Fourth.'
+        result = described_class.sentences(text, 2, position: :start)
+        expect(result).to eq('...Third. Fourth.')
+      end
+    end
+  end
 end

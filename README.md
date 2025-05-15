@@ -64,14 +64,40 @@ Philiprehberger::Truncate.html('<p><strong>hello world</strong></p>', 5)
 # => "<p><strong>hello...</strong></p>"
 ```
 
+### Line Truncation
+
+```ruby
+text = "Line one\nLine two\nLine three\nLine four"
+Philiprehberger::Truncate.lines(text, 2)
+# => "Line one\nLine two..."
+```
+
+### Position Control
+
+Control where the omission appears — `:end` (default), `:start`, or `:middle`:
+
+```ruby
+text = "one two three four five"
+
+Philiprehberger::Truncate.words(text, 3, position: :end)
+# => "one two three..."
+
+Philiprehberger::Truncate.words(text, 3, position: :start)
+# => "...three four five"
+
+Philiprehberger::Truncate.words(text, 4, position: :middle)
+# => "one two...four five"
+```
+
 ## API
 
 | Method | Description |
 |--------|-------------|
-| `Truncate.words(text, count, omission: '...')` | Truncate text to N words with omission string |
-| `Truncate.chars(text, count, omission: '...')` | Truncate text to N characters at a word boundary |
-| `Truncate.sentences(text, count, omission: '...')` | Truncate text to N sentences |
-| `Truncate.html(html, char_count, omission: '...')` | HTML-safe truncation that preserves and closes tags |
+| `Truncate.words(text, count, omission:, position:)` | Truncate text to N words |
+| `Truncate.chars(text, count, omission:, position:)` | Truncate text to N characters at a word boundary |
+| `Truncate.sentences(text, count, omission:, position:)` | Truncate text to N sentences |
+| `Truncate.lines(text, count, omission:)` | Truncate text to N lines |
+| `Truncate.html(html, char_count, omission:)` | HTML-safe truncation that preserves and closes tags |
 
 ## Development
 
