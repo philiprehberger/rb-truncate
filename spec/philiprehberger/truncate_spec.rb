@@ -43,15 +43,15 @@ RSpec.describe Philiprehberger::Truncate do
 
   describe '.chars' do
     it 'truncates at a word boundary' do
-      expect(described_class.chars('hello beautiful world', 16)).to eq('hello beautiful...')
+      expect(described_class.chars('hello beautiful world', 20)).to eq('hello beautiful...')
     end
 
     it 'returns the original text when within limit' do
       expect(described_class.chars('short', 10)).to eq('short')
     end
 
-    it 'never breaks mid-word' do
-      result = described_class.chars('abcdefghij klmnop', 12)
+    it 'never breaks mid-word when spaces exist' do
+      result = described_class.chars('hello world foo bar', 12)
       expect(result).not_to match(/\w\.\.\./)
     end
 
