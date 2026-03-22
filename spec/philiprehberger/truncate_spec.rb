@@ -50,9 +50,10 @@ RSpec.describe Philiprehberger::Truncate do
       expect(described_class.chars('short', 10)).to eq('short')
     end
 
-    it 'never breaks mid-word when spaces exist' do
+    it 'truncates at a complete word boundary' do
       result = described_class.chars('hello world foo bar', 12)
-      expect(result).not_to match(/\w\.\.\./)
+      # Should truncate to 'hello...' (9 chars fits in limit=12-3=9)
+      expect(result).to eq('hello...')
     end
 
     it 'uses a custom omission string' do
