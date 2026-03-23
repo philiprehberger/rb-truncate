@@ -4,7 +4,7 @@
 [![Gem Version](https://badge.fury.io/rb/philiprehberger-truncate.svg)](https://rubygems.org/gems/philiprehberger-truncate)
 [![License](https://img.shields.io/github/license/philiprehberger/rb-truncate)](LICENSE)
 
-Smart string truncation with word boundaries, HTML safety, and multi-byte support. Truncate by words, characters, or sentences with configurable omission strings.
+Smart string truncation with word boundaries, HTML safety, and multi-byte support
 
 ## Requirements
 
@@ -12,14 +12,16 @@ Smart string truncation with word boundaries, HTML safety, and multi-byte suppor
 
 ## Installation
 
-```sh
-gem install philiprehberger-truncate
-```
-
-Or add to your Gemfile:
+Add to your Gemfile:
 
 ```ruby
-gem 'philiprehberger-truncate'
+gem "philiprehberger-truncate"
+```
+
+Or install directly:
+
+```bash
+gem install philiprehberger-truncate
 ```
 
 ## Usage
@@ -68,7 +70,7 @@ HTML-safe truncation that counts only visible characters and properly closes any
 
 ## Development
 
-```sh
+```bash
 bundle install
 bundle exec rspec
 bundle exec rubocop
@@ -76,4 +78,4 @@ bundle exec rubocop
 
 ## License
 
-MIT License. See [LICENSE](LICENSE) for details.
+MIT
