@@ -52,21 +52,12 @@ Philiprehberger::Truncate.words('one two three', 2, omission: ' [more]')
 
 ## API
 
-### `Truncate.words(text, count, omission: '...')`
-
-Truncates text to N words, appending the omission string if truncated.
-
-### `Truncate.chars(text, count, omission: '...')`
-
-Truncates text to N characters at a word boundary. The omission string is included in the character count.
-
-### `Truncate.sentences(text, count, omission: '...')`
-
-Truncates text to N sentences, splitting on sentence-ending punctuation (`.`, `!`, `?`).
-
-### `Truncate.html(html, char_count, omission: '...')`
-
-HTML-safe truncation that counts only visible characters and properly closes any unclosed tags (`<strong>`, `<em>`, `<p>`, etc.).
+| Method | Description |
+|--------|-------------|
+| `Truncate.words(text, count, omission: '...')` | Truncate text to N words with omission string |
+| `Truncate.chars(text, count, omission: '...')` | Truncate text to N characters at a word boundary |
+| `Truncate.sentences(text, count, omission: '...')` | Truncate text to N sentences |
+| `Truncate.html(html, char_count, omission: '...')` | HTML-safe truncation that preserves and closes tags |
 
 ## Development
 
