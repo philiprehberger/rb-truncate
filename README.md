@@ -27,7 +27,7 @@ gem install philiprehberger-truncate
 ## Usage
 
 ```ruby
-require 'philiprehberger/truncate'
+require "philiprehberger/truncate"
 
 # Truncate by words
 Philiprehberger::Truncate.words('one two three four five', 3)
