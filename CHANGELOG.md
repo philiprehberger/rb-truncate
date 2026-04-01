@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-04-01
+
+### Added
+- `Truncate.lines(text, count, omission:)` method for line-based truncation
+- `position:` parameter (`:end`, `:start`, `:middle`) for `words`, `chars`, and `sentences` methods
+
+### Fixed
+- Fix gemspec authors to `['Philip Rehberger']`
+- Fix gemspec email to `['me@philiprehberger.com']`
+- Fix gemspec required_ruby_version to `'>= 3.1.0'`
+
 ## [0.1.10] - 2026-03-31
 
 ### Added

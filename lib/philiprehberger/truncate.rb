@@ -14,39 +14,63 @@ module Philiprehberger
     SENTENCE_BOUNDARY = /(?<=[.!?])\s+/
 
     class << self
-      def words(text, count, omission: DEFAULT_OMISSION)
+      def words(text, count, omission: DEFAULT_OMISSION, position: :end)
         return '' if text.empty?
 
         parts = text.split(/\s+/)
         return text if parts.length <= count
 
-        parts.first(count).join(' ') + omission
+        case position
+        when :start
+          omission + parts.last(count).join(' ')
+        when :middle
+          half = count / 2
+          tail = count - half
+          parts.first(half).join(' ') + omission + parts.last(tail).join(' ')
+        else
+          parts.first(count).join(' ') + omission
+        end
       end
 
-      def chars(text, count, omission: DEFAULT_OMISSION)
+      def chars(text, count, omission: DEFAULT_OMISSION, position: :end)
         return '' if text.empty?
         return text if text.length <= count
 
-        limit = count - omission.length
-        return omission[0, count] if limit <= 0
-
-        truncated = text[0, limit]
-
-        if limit < text.length && text[limit] =~ /\S/ && truncated.include?(' ')
-          boundary = truncated.rindex(/\s/)
-          truncated = truncated[0, boundary] if boundary
+        case position
+        when :start
+          chars_start(text, count, omission)
+        when :middle
+          chars_middle(text, count, omission)
+        else
+          chars_end(text, count, omission)
         end
-
-        truncated.rstrip + omission
       end
 
-      def sentences(text, count, omission: DEFAULT_OMISSION)
+      def sentences(text, count, omission: DEFAULT_OMISSION, position: :end)
         return '' if text.empty?
 
         parts = text.split(SENTENCE_BOUNDARY)
         return text if parts.length <= count
 
-        parts.first(count).join(' ') + omission
+        case position
+        when :start
+          omission + parts.last(count).join(' ')
+        when :middle
+          half = count / 2
+          tail = count - half
+          parts.first(half).join(' ') + omission + parts.last(tail).join(' ')
+        else
+          parts.first(count).join(' ') + omission
+        end
+      end
+
+      def lines(text, count, omission: DEFAULT_OMISSION)
+        return '' if text.empty?
+
+        all_lines = text.split("\n", -1)
+        return text if all_lines.length <= count
+
+        all_lines.first(count).join("\n") + omission
       end
 
       def html(html, char_count, omission: DEFAULT_OMISSION)
@@ -83,6 +107,38 @@ module Philiprehberger
           open_tags.reverse_each { |tag| result << "</#{tag}>" }
           result
         end
+      end
+
+      private
+
+      def chars_end(text, count, omission)
+        limit = count - omission.length
+        return omission[0, count] if limit <= 0
+
+        truncated = text[0, limit]
+
+        if limit < text.length && text[limit] =~ /\S/ && truncated.include?(' ')
+          boundary = truncated.rindex(/\s/)
+          truncated = truncated[0, boundary] if boundary
+        end
+
+        truncated.rstrip + omission
+      end
+
+      def chars_start(text, count, omission)
+        limit = count - omission.length
+        return omission[0, count] if limit <= 0
+
+        omission + text[text.length - limit, limit].lstrip
+      end
+
+      def chars_middle(text, count, omission)
+        limit = count - omission.length
+        return omission[0, count] if limit <= 0
+
+        half = limit / 2
+        tail = limit - half
+        text[0, half] + omission + text[text.length - tail, tail]
       end
     end
   end
