@@ -95,6 +95,63 @@ RSpec.describe Philiprehberger::Truncate do
     end
   end
 
+  describe '.strip_html' do
+    it 'strips basic HTML tags' do
+      expect(described_class.strip_html('<p>hello world</p>', 100)).to eq('hello world')
+    end
+
+    it 'decodes &amp; entity' do
+      expect(described_class.strip_html('Tom &amp; Jerry', 100)).to eq('Tom & Jerry')
+    end
+
+    it 'decodes &lt; and &gt; entities' do
+      expect(described_class.strip_html('&lt;b&gt;bold&lt;/b&gt;', 100)).to eq('<b>bold</b>')
+    end
+
+    it 'decodes &quot; entity' do
+      expect(described_class.strip_html('say &quot;hello&quot;', 100)).to eq('say "hello"')
+    end
+
+    it 'decodes &apos; entity' do
+      expect(described_class.strip_html('it&apos;s fine', 100)).to eq("it's fine")
+    end
+
+    it 'decodes decimal numeric entities' do
+      expect(described_class.strip_html('&#65;&#66;&#67;', 100)).to eq('ABC')
+    end
+
+    it 'decodes hex numeric entities' do
+      expect(described_class.strip_html('&#x41;&#x42;&#x43;', 100)).to eq('ABC')
+    end
+
+    it 'collapses multiple whitespace into single spaces' do
+      expect(described_class.strip_html("<p>hello   \n  world</p>", 100)).to eq('hello world')
+    end
+
+    it 'strips leading and trailing whitespace' do
+      expect(described_class.strip_html('  <span>text</span>  ', 100)).to eq('text')
+    end
+
+    it 'truncates the resulting plain text with omission' do
+      result = described_class.strip_html('<p>hello beautiful world</p>', 14)
+      expect(result).to end_with('...')
+      expect(result.length).to be <= 14
+    end
+
+    it 'does not truncate when text is shorter than limit' do
+      expect(described_class.strip_html('<em>hi</em>', 50)).to eq('hi')
+    end
+
+    it 'uses a custom omission string' do
+      result = described_class.strip_html('<p>hello world foo</p>', 10, omission: '~')
+      expect(result).to end_with('~')
+    end
+
+    it 'returns empty string for empty input' do
+      expect(described_class.strip_html('', 10)).to eq('')
+    end
+  end
+
   describe '.html' do
     it 'truncates visible text only' do
       expect(described_class.html('<p>hello world</p>', 5)).to eq('<p>hello...</p>')
