@@ -73,6 +73,22 @@ module Philiprehberger
         all_lines.first(count).join("\n") + omission
       end
 
+      def strip_html(html, length, omission: DEFAULT_OMISSION)
+        return '' if html.empty?
+
+        plain = html.gsub(/<[^>]+>/, ' ')
+        plain = plain.gsub('&amp;', '&')
+                     .gsub('&lt;', '<')
+                     .gsub('&gt;', '>')
+                     .gsub('&quot;', '"')
+                     .gsub('&apos;', "'")
+                     .gsub(/&#x([0-9a-fA-F]+);/) { ::Regexp.last_match(1).to_i(16).chr(Encoding::UTF_8) }
+                     .gsub(/&#([0-9]+);/) { ::Regexp.last_match(1).to_i.chr(Encoding::UTF_8) }
+        plain = plain.gsub(/\s+/, ' ').strip
+
+        chars(plain, length, omission: omission)
+      end
+
       def html(html, char_count, omission: DEFAULT_OMISSION)
         return '' if html.empty?
 

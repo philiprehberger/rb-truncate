@@ -72,6 +72,23 @@ Philiprehberger::Truncate.lines(text, 2)
 # => "Line one\nLine two..."
 ```
 
+### Strip HTML and Truncate
+
+Strip HTML tags, decode entities, collapse whitespace, and truncate the resulting plain text:
+
+```ruby
+Philiprehberger::Truncate.strip_html('<p>Hello <strong>world</strong></p>', 10)
+# => "Hello..."
+
+# Entity decoding
+Philiprehberger::Truncate.strip_html('Tom &amp; Jerry are &lt;friends&gt;', 100)
+# => "Tom & Jerry are <friends>"
+
+# Custom omission
+Philiprehberger::Truncate.strip_html('<p>hello beautiful world</p>', 14, omission: ' …')
+# => "hello beautiful …"
+```
+
 ### Position Control
 
 Control where the omission appears — `:end` (default), `:start`, or `:middle`:
@@ -98,6 +115,7 @@ Philiprehberger::Truncate.words(text, 4, position: :middle)
 | `Truncate.sentences(text, count, omission:, position:)` | Truncate text to N sentences |
 | `Truncate.lines(text, count, omission:)` | Truncate text to N lines |
 | `Truncate.html(html, char_count, omission:)` | HTML-safe truncation that preserves and closes tags |
+| `Truncate.strip_html(html, length, omission:)` | Strip HTML tags, decode entities, and truncate plain text |
 
 ## Development
 
