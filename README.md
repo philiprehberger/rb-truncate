@@ -89,6 +89,25 @@ Philiprehberger::Truncate.strip_html('<p>hello beautiful world</p>', 14, omissio
 # => "hello beautiful …"
 ```
 
+### Batch Truncation
+
+Truncate an array of strings with shared options in a single call:
+
+```ruby
+strings = ['hello world foo', 'another long string here', 'short']
+
+Philiprehberger::Truncate.batch(strings, 12)
+# => ["hello world...", "another long...", "short"]
+
+# Custom omission applied to every string
+Philiprehberger::Truncate.batch(strings, 12, omission: '~')
+# => ["hello world~", "another long~", "short"]
+
+# Default omission constant is publicly available
+Philiprehberger::Truncate::DEFAULT_OMISSION
+# => "..."
+```
+
 ### Position Control
 
 Control where the omission appears — `:end` (default), `:start`, or `:middle`:
@@ -116,6 +135,8 @@ Philiprehberger::Truncate.words(text, 4, position: :middle)
 | `Truncate.lines(text, count, omission:)` | Truncate text to N lines |
 | `Truncate.html(html, char_count, omission:)` | HTML-safe truncation that preserves and closes tags |
 | `Truncate.strip_html(html, length, omission:)` | Strip HTML tags, decode entities, and truncate plain text |
+| `Truncate.batch(strings, length, **opts)` | Truncate each string in an Array using shared options, returning a new Array |
+| `Truncate::DEFAULT_OMISSION` | Public constant exposing the default omission string (`'...'`) |
 
 ## Development
 

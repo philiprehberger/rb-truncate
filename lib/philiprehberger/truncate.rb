@@ -14,6 +14,10 @@ module Philiprehberger
     SENTENCE_BOUNDARY = /(?<=[.!?])\s+/
 
     class << self
+      def batch(strings, length, omission: DEFAULT_OMISSION, position: :end)
+        strings.map { |s| chars(s, length, omission: omission, position: position) }
+      end
+
       def words(text, count, omission: DEFAULT_OMISSION, position: :end)
         return '' if text.empty?
 

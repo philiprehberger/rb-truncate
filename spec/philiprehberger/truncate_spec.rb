@@ -243,6 +243,42 @@ RSpec.describe Philiprehberger::Truncate do
     end
   end
 
+  describe '.batch' do
+    it 'returns an array of truncated strings' do
+      result = described_class.batch(['hello world foo', 'another long string here', 'short'], 12)
+      expect(result).to be_an(Array)
+      expect(result.length).to eq(3)
+      expect(result[0]).to end_with('...')
+      expect(result[0].length).to be <= 12
+      expect(result[2]).to eq('short')
+    end
+
+    it 'honors a custom omission option' do
+      result = described_class.batch(['hello world foo', 'another long string'], 12, omission: '~')
+      expect(result[0]).to end_with('~')
+      expect(result[1]).to end_with('~')
+    end
+
+    it 'honors the position option' do
+      result = described_class.batch(['hello beautiful world'], 12, position: :start)
+      expect(result[0]).to start_with('...')
+    end
+
+    it 'returns an empty array for an empty input array' do
+      expect(described_class.batch([], 10)).to eq([])
+    end
+  end
+
+  describe 'DEFAULT_OMISSION' do
+    it 'is publicly accessible' do
+      expect(described_class.const_defined?(:DEFAULT_OMISSION)).to be(true)
+    end
+
+    it 'is a String' do
+      expect(described_class::DEFAULT_OMISSION).to be_a(String)
+    end
+  end
+
   describe 'position parameter' do
     describe 'words with position: :start' do
       it 'keeps last N words with omission at start' do
