@@ -68,6 +68,36 @@ module Philiprehberger
         end
       end
 
+      # Truncate by byte length, preserving UTF-8 boundaries so no partial
+      # multi-byte codepoint is emitted. Useful for database column limits
+      # (`VARCHAR(255)` is bytes under MySQL `utf8mb4`), HTTP header budgets,
+      # and message-size caps. The omission string's byte length is included
+      # in the budget.
+      #
+      # @param text [String] the input string
+      # @param byte_count [Integer] maximum byte length of the result
+      # @param omission [String] suffix appended when truncated (default `'...'`)
+      # @param position [Symbol] `:end`, `:start`, or `:middle`
+      # @return [String] truncated string, at or under `byte_count` bytes
+      def bytes(text, byte_count, omission: DEFAULT_OMISSION, position: :end)
+        return '' if text.empty?
+
+        bytes_in = text.bytesize
+        return text if bytes_in <= byte_count
+
+        omission_bytes = omission.bytesize
+        return safe_byte_slice(omission, byte_count) if byte_count <= omission_bytes
+
+        case position
+        when :start
+          bytes_start(text, byte_count, omission, omission_bytes)
+        when :middle
+          bytes_middle(text, byte_count, omission, omission_bytes)
+        else
+          bytes_end(text, byte_count, omission, omission_bytes)
+        end
+      end
+
       def lines(text, count, omission: DEFAULT_OMISSION)
         return '' if text.empty?
 
@@ -159,6 +189,47 @@ module Philiprehberger
         half = limit / 2
         tail = limit - half
         text[0, half] + omission + text[text.length - tail, tail]
+      end
+
+      # Take the first `n` bytes of `text`, then walk back to the nearest
+      # valid UTF-8 boundary so no partial codepoint is emitted. Returns a
+      # UTF-8-encoded String.
+      def safe_byte_slice(text, n)
+        return +'' if n <= 0
+
+        sliced = text.byteslice(0, n) || +''
+        sliced.force_encoding(Encoding::UTF_8)
+        sliced = sliced.byteslice(0, sliced.bytesize - 1) until sliced.valid_encoding? || sliced.empty?
+        sliced.force_encoding(Encoding::UTF_8)
+      end
+
+      # Take the last `n` bytes of `text`, then walk forward to the nearest
+      # valid UTF-8 boundary.
+      def safe_byte_slice_end(text, n)
+        return +'' if n <= 0
+
+        start = [text.bytesize - n, 0].max
+        sliced = text.byteslice(start, text.bytesize - start) || +''
+        sliced.force_encoding(Encoding::UTF_8)
+        sliced = sliced.byteslice(1, sliced.bytesize - 1) until sliced.valid_encoding? || sliced.empty?
+        sliced.force_encoding(Encoding::UTF_8)
+      end
+
+      def bytes_end(text, byte_count, omission, omission_bytes)
+        head_budget = byte_count - omission_bytes
+        safe_byte_slice(text, head_budget) + omission
+      end
+
+      def bytes_start(text, byte_count, omission, omission_bytes)
+        tail_budget = byte_count - omission_bytes
+        omission + safe_byte_slice_end(text, tail_budget)
+      end
+
+      def bytes_middle(text, byte_count, omission, omission_bytes)
+        body = byte_count - omission_bytes
+        half = body / 2
+        tail = body - half
+        safe_byte_slice(text, half) + omission + safe_byte_slice_end(text, tail)
       end
     end
   end

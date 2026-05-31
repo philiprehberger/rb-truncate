@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-05-30
+
+### Added
+- `Truncate.bytes(text, byte_count, omission: '...', position: :end)` — truncate by byte length while preserving UTF-8 boundaries so no partial multi-byte codepoint is emitted. Useful for database column limits, HTTP header budgets, and message-size caps. Supports `:end`, `:start`, and `:middle` positions.
+- Card image to README per readme-template guide
+
 ## [0.4.0] - 2026-04-26
 
 ### Added

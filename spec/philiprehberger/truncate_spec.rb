@@ -317,4 +317,50 @@ RSpec.describe Philiprehberger::Truncate do
       end
     end
   end
+
+  describe '.bytes' do
+    it 'returns the input unchanged when already under the byte limit' do
+      expect(described_class.bytes('hello', 100)).to eq('hello')
+    end
+
+    it 'truncates ASCII to the byte budget including the omission' do
+      result = described_class.bytes('hello world', 8)
+      expect(result.bytesize).to be <= 8
+      expect(result).to end_with('...')
+    end
+
+    it 'never emits a partial multi-byte UTF-8 codepoint' do
+      text = 'café résumé'
+      result = described_class.bytes(text, 7)
+      expect(result.bytesize).to be <= 7
+      expect(result.valid_encoding?).to be true
+    end
+
+    it 'supports position: :start' do
+      result = described_class.bytes('hello world', 8, position: :start)
+      expect(result.bytesize).to be <= 8
+      expect(result).to start_with('...')
+    end
+
+    it 'supports position: :middle' do
+      result = described_class.bytes('hello world', 9, position: :middle)
+      expect(result.bytesize).to be <= 9
+      expect(result).to include('...')
+    end
+
+    it 'returns a fitting prefix of the omission when budget <= omission' do
+      result = described_class.bytes('hello world', 2)
+      expect(result.bytesize).to be <= 2
+    end
+
+    it 'returns an empty string for empty input' do
+      expect(described_class.bytes('', 10)).to eq('')
+    end
+
+    it 'respects a custom omission' do
+      result = described_class.bytes('hello world', 8, omission: '~')
+      expect(result.bytesize).to be <= 8
+      expect(result).to end_with('~')
+    end
+  end
 end

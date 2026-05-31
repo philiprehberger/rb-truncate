@@ -4,6 +4,8 @@
 [![Gem Version](https://badge.fury.io/rb/philiprehberger-truncate.svg)](https://rubygems.org/gems/philiprehberger-truncate)
 [![Last updated](https://img.shields.io/github/last-commit/philiprehberger/rb-truncate)](https://github.com/philiprehberger/rb-truncate/commits/main)
 
+![philiprehberger-truncate](https://raw.githubusercontent.com/philiprehberger/rb-truncate/main/package-card.webp)
+
 Smart string truncation with word boundaries, HTML safety, and multi-byte support
 
 ## Requirements
@@ -62,6 +64,29 @@ Truncate by visible characters while preserving and closing HTML tags:
 ```ruby
 Philiprehberger::Truncate.html('<p><strong>hello world</strong></p>', 5)
 # => "<p><strong>hello...</strong></p>"
+```
+
+### Byte Truncation
+
+Truncate by byte length while preserving UTF-8 boundaries. Useful for database
+column limits, HTTP header budgets, and message-size caps. The omission's
+byte length is included in the budget; multi-byte characters are never
+split across the boundary:
+
+```ruby
+Philiprehberger::Truncate.bytes('hello world', 8)
+# => "hello..."
+
+# Multi-byte safe — never emits a partial codepoint
+Philiprehberger::Truncate.bytes('café résumé', 7)
+# => "caf..." (note: 'café' would be 5 bytes; result stops at a valid boundary)
+
+# Position control
+Philiprehberger::Truncate.bytes('hello world', 8, position: :start)
+# => "...world"
+
+Philiprehberger::Truncate.bytes('hello world', 9, position: :middle)
+# => "hel...rld"
 ```
 
 ### Line Truncation
@@ -133,6 +158,7 @@ Philiprehberger::Truncate.words(text, 4, position: :middle)
 | `Truncate.chars(text, count, omission:, position:)` | Truncate text to N characters at a word boundary |
 | `Truncate.sentences(text, count, omission:, position:)` | Truncate text to N sentences |
 | `Truncate.lines(text, count, omission:)` | Truncate text to N lines |
+| `Truncate.bytes(text, byte_count, omission:, position:)` | Truncate by byte length while preserving UTF-8 boundaries |
 | `Truncate.html(html, char_count, omission:)` | HTML-safe truncation that preserves and closes tags |
 | `Truncate.strip_html(html, length, omission:)` | Strip HTML tags, decode entities, and truncate plain text |
 | `Truncate.batch(strings, length, **opts)` | Truncate each string in an Array using shared options, returning a new Array |
